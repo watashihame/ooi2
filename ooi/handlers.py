@@ -7,7 +7,7 @@ from auth.kancolle import KanColleAuth
 from auth.exceptions import OoiAuthError
 from utils.convert import to_int, to_str
 from config import kcs_domain, kcs_https_domain
-from dbConnect.query import query_user
+from dbConnect.query import DBconnect
 
 class MainHandler(RequestHandler):
     def get(self):
