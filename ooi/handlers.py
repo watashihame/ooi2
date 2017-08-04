@@ -7,7 +7,7 @@ from auth.kancolle import KanColleAuth
 from auth.exceptions import OoiAuthError
 from utils.convert import to_int, to_str
 from config import kcs_domain, kcs_https_domain
-
+from dbConnect.query import query_user
 
 class MainHandler(RequestHandler):
     def get(self):
@@ -19,7 +19,7 @@ class MainHandler(RequestHandler):
         login_id = self.get_argument('login_id')
         password = self.get_argument('password')
         play_mode = to_int(self.get_argument('play_mode'), 1)
-        if login_id and password:
+        if login_id and password and query_user(login_id):
             auth = KanColleAuth(login_id, password)
             try:
                 flash_url, world_ip, token, starttime, owner = yield auth.get_flash()
@@ -40,7 +40,7 @@ class MainHandler(RequestHandler):
 
         else:
             self.render('login_form.html', error=True, play_mode=play_mode,
-                        message='请输入完整的登录ID和密码')
+                        message='请输入有效的登录ID和密码')
 
 
 class NormalGameHandler(RequestHandler):
