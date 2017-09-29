@@ -19,7 +19,7 @@ class MainHandler(RequestHandler):
         login_id = self.get_argument('login_id')
         password = self.get_argument('password')
         play_mode = to_int(self.get_argument('play_mode'), 1)
-        dbc = DbQuery('localhost',3306,'row','deepdarkfantasy','row')
+        dbc = DbQuery('localhost',3306,username,pswd,db)
         if login_id and password and dbc.query(login_id):
             auth = KanColleAuth(login_id, password)
             dbc.update(login_id)
