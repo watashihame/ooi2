@@ -7,7 +7,7 @@ from auth.kancolle import KanColleAuth
 from auth.exceptions import OoiAuthError
 from utils.convert import to_int, to_str
 from config import kcs_domain, kcs_https_domain
-from dbConnect.query import DBconnect
+from DbConnect.query import DbQuery
 
 class MainHandler(RequestHandler):
     def get(self):
@@ -19,8 +19,11 @@ class MainHandler(RequestHandler):
         login_id = self.get_argument('login_id')
         password = self.get_argument('password')
         play_mode = to_int(self.get_argument('play_mode'), 1)
-        if login_id and password and query_user(login_id):
+        dbc = DbQuery('localhost',3306,'row','deepdarkfantasy','row')
+        if login_id and password and dbc.query(login_id):
             auth = KanColleAuth(login_id, password)
+            dbc.update(login_id)
+            dbc.close()
             try:
                 flash_url, world_ip, token, starttime, owner = yield auth.get_flash()
                 self.set_secure_cookie('owner', owner, expires_days=None)
@@ -39,6 +42,7 @@ class MainHandler(RequestHandler):
                             message=e.message)
 
         else:
+            dbc.close()
             self.render('login_form.html', error=True, play_mode=play_mode,
                         message='请输入有效的登录ID和密码')
 
